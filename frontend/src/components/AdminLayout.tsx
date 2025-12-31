@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
 
 interface AdminLayoutProps {
