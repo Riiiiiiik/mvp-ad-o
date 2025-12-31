@@ -160,15 +160,27 @@ export default function LandingPage() {
     };
 
 
+    // Efeito para garantir máscara no WhatsApp (útil para auto-completar)
+    useEffect(() => {
+        const digits = leadWhatsapp.replace(/\D/g, '');
+        if (digits.length > 0 && !leadWhatsapp.includes('(') && digits.length >= 2) {
+            setLeadWhatsapp(formatPhoneNumber(digits));
+        }
+    }, [leadWhatsapp]);
+
     const formatPhoneNumber = (v: string) => {
         const digits = v.replace(/\D/g, "");
         if (digits.length <= 2) return digits;
         if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
-        return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}`;
+        // Limitar a 11 dígitos para o formato (00) 00000-0000
+        const limited = digits.slice(0, 11);
+        return `(${limited.slice(0, 2)}) ${limited.slice(2, 7)}-${limited.slice(7, 11)}`;
     };
 
     const handleWhatsappChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const formatted = formatPhoneNumber(e.target.value);
+        // Remove tudo que não é dígito antes de formatar
+        const input = e.target.value.replace(/\D/g, '');
+        const formatted = formatPhoneNumber(input);
         setLeadWhatsapp(formatted);
     };
 
