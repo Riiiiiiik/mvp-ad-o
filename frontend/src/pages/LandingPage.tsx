@@ -197,18 +197,18 @@ export default function LandingPage() {
         setStatus('loading');
         try {
             console.log('Sending to Supabase...');
-            const { data, error } = await supabase.from('leads').insert([{
+            const { error } = await supabase.from('leads').insert([{
                 nome: leadName,
                 whatsapp: leadWhatsapp,
                 origem: 'Landing Page v2'
-            }]).select();
+            }]);
 
             if (error) {
                 console.error('Supabase Error:', error);
                 throw error;
             }
 
-            console.log('Supabase Success:', data);
+            console.log('Supabase Success: Lead inserted');
             setStatus('success');
             setLeadName('');
             setLeadWhatsapp('');
