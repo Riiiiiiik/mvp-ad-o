@@ -200,7 +200,8 @@ export default function LandingPage() {
             const { error } = await supabase.from('leads').insert([{
                 nome: leadName,
                 whatsapp: leadWhatsapp,
-                origem: 'Landing Page v2'
+                origem: 'Landing Page v2',
+                status: 'NOVO'
             }]);
 
             if (error) {
