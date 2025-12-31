@@ -253,15 +253,15 @@ export default function PropertyManagement() {
 
     return (
         <AdminLayout activePath="#/admin/properties">
-            <div className="p-8">
-                <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+            <div className="p-4 md:p-8">
+                <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
                     <div>
-                        <h1 className="text-3xl font-black text-white tracking-tighter uppercase">Inventário</h1>
-                        <p className="text-xs text-slate-500 font-bold uppercase tracking-widest mt-1">Gestão de Portfólio & Mídia</p>
+                        <h1 className="text-2xl md:text-3xl font-black text-white tracking-tighter uppercase">Inventário</h1>
+                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Gestão de Portfólio & Mídia</p>
                     </div>
 
-                    <div className="flex items-center gap-4 w-full md:w-auto">
-                        <div className="relative flex-1 md:w-80">
+                    <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
+                        <div className="relative w-full sm:w-80">
                             <input
                                 type="text"
                                 placeholder="Buscar por título ou bairro..."
@@ -274,15 +274,57 @@ export default function PropertyManagement() {
 
                         <button
                             onClick={() => setShowAddModal(true)}
-                            className="bg-blue-600 hover:bg-blue-500 px-6 py-3 rounded-2xl transition-all text-white text-[10px] font-black uppercase tracking-widest shadow-lg shadow-blue-600/20 whitespace-nowrap"
+                            className="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 px-6 py-3 rounded-2xl transition-all text-white text-[10px] font-black uppercase tracking-widest shadow-lg shadow-blue-600/20 whitespace-nowrap"
                         >
                             Novo Imóvel
                         </button>
                     </div>
                 </header>
 
-                {/* Properties List */}
-                <div className="bg-slate-900/40 border border-slate-800/50 rounded-3xl overflow-hidden backdrop-blur-sm">
+                {/* Mobile Card List (Visible only on mobile) */}
+                <div className="grid grid-cols-1 gap-4 lg:hidden">
+                    {loading && properties.length === 0 ? (
+                        <div className="py-20 text-center text-slate-500 font-bold animate-pulse uppercase tracking-[0.2em] text-[10px]">Indexando catálogo...</div>
+                    ) : properties.length === 0 ? (
+                        <div className="py-20 text-center text-slate-600 font-bold uppercase tracking-[0.2em] text-[10px]">Nenhum imóvel encontrado</div>
+                    ) : properties.map((prop) => (
+                        <div key={prop.id} className="bg-slate-900/40 border border-slate-800/50 rounded-2xl p-4 flex flex-col gap-4">
+                            <div className="flex items-center gap-4">
+                                {prop.main_image_url ? (
+                                    <img src={prop.main_image_url} alt={prop.titulo} className="w-16 h-16 rounded-xl object-cover border border-slate-800" />
+                                ) : (
+                                    <div className="w-16 h-16 rounded-xl bg-slate-800 flex items-center justify-center text-slate-600">
+                                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                                    </div>
+                                )}
+                                <div className="flex-1 min-w-0">
+                                    <h3 className="font-bold text-sm text-white uppercase truncate">{prop.titulo}</h3>
+                                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider truncate">{prop.localizacao}</p>
+                                    <div className="flex gap-2 mt-2">
+                                        <span className={`text-[8px] px-2 py-0.5 rounded-full font-black uppercase tracking-widest border ${prop.status === 'ATIVO' ? 'border-emerald-500/30 text-emerald-400 bg-emerald-500/5' : 'border-slate-700 text-slate-500'}`}>
+                                            {prop.status}
+                                        </span>
+                                        {prop.is_destaque === 1 && (
+                                            <span className="bg-amber-500/10 text-amber-500 text-[8px] px-2 py-0.5 rounded-full font-black uppercase border border-amber-500/20">Destaque</span>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="flex justify-between items-center pt-4 border-t border-slate-800/50">
+                                <div className="space-y-1">
+                                    <p className="font-black text-white text-xs">{prop.preco || 'Sob consulta'}</p>
+                                    <p className="text-[9px] text-slate-500 font-bold uppercase">{prop.tipo} • {prop.area || 'N/A'}</p>
+                                </div>
+                                <button className="text-slate-400 p-2 hover:bg-slate-800 rounded-xl">
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                {/* Desktop view (Visible only on lg) */}
+                <div className="hidden lg:block bg-slate-900/40 border border-slate-800/50 rounded-3xl overflow-hidden backdrop-blur-sm">
                     <table className="w-full text-left border-collapse">
                         <thead>
                             <tr className="border-b border-slate-800/50 text-[10px] text-slate-500 font-black uppercase tracking-widest">
@@ -365,20 +407,20 @@ export default function PropertyManagement() {
 
                 {/* Enhanced Add Modal */}
                 {showAddModal && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md overflow-y-auto">
-                        <div className="bg-slate-900 border border-slate-800 w-full max-w-2xl rounded-[32px] shadow-2xl my-8 animate-in fade-in zoom-in duration-300">
-                            <div className="p-8 md:p-10">
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-0 md:p-4 bg-slate-950/90 backdrop-blur-md overflow-y-auto">
+                        <div className="bg-slate-900 border border-slate-800 w-full max-w-2xl min-h-screen md:min-h-0 md:rounded-[32px] shadow-2xl animate-in fade-in zoom-in duration-300">
+                            <div className="p-6 md:p-10">
                                 <form onSubmit={handleAddProperty} className="space-y-8">
                                     {/* Seção 1: Mídia */}
                                     <div className="space-y-4">
                                         <div className="flex items-center gap-2 mb-2">
                                             <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
-                                            <h4 className="text-[10px] text-white font-black uppercase tracking-[0.2em]">Álbum de Fotos & Destaque</h4>
+                                            <h4 className="text-[10px] text-white font-black uppercase tracking-[0.2em] md:tracking-[0.2em]">Álbum de Fotos & Destaque</h4>
                                         </div>
 
-                                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                        <div className="grid grid-cols-1 gap-4">
                                             {/* Botão de Upload Múltiplo */}
-                                            <label className="col-span-1 border-2 border-dashed border-slate-800 rounded-[24px] p-6 hover:border-blue-500/50 transition-all cursor-pointer bg-slate-950/50 group relative flex flex-col items-center justify-center min-h-[140px]">
+                                            <label className="border-2 border-dashed border-slate-800 rounded-2xl md:rounded-[24px] p-6 hover:border-blue-500/50 transition-all cursor-pointer bg-slate-950/50 group relative flex flex-col items-center justify-center min-h-[120px]">
                                                 <input type="file" multiple accept="image/*" onChange={handleImageUpload} className="hidden" />
                                                 {isProcessingImage ? (
                                                     <div className="flex flex-col items-center">
@@ -394,7 +436,7 @@ export default function PropertyManagement() {
                                             </label>
 
                                             {/* Galeria de Miniaturas */}
-                                            <div className="col-span-3 grid grid-cols-4 md:grid-cols-6 gap-3 min-h-[140px] bg-slate-950/20 p-4 rounded-3xl border border-slate-800/50">
+                                            <div className="flex gap-3 overflow-x-auto pb-2 custom-scrollbar bg-slate-950/20 p-4 rounded-2xl border border-slate-800/50 min-h-[140px]">
                                                 {newProp.images.map((img, index) => (
                                                     <div
                                                         key={index}
@@ -402,7 +444,7 @@ export default function PropertyManagement() {
                                                         onDragStart={(e) => handleDragStart(e, index)}
                                                         onDragOver={handleDragOver}
                                                         onDrop={(e) => handleDrop(e, index)}
-                                                        className={`relative group aspect-square cursor-move transition-all duration-200 ${draggedItemIndex === index ? 'opacity-50 scale-95' : 'opacity-100'}`}
+                                                        className={`relative group aspect-square h-24 flex-shrink-0 cursor-move transition-all duration-200 ${draggedItemIndex === index ? 'opacity-50 scale-95' : 'opacity-100'}`}
                                                     >
                                                         <img
                                                             src={img.thumb_url || img.image_url}
@@ -429,25 +471,21 @@ export default function PropertyManagement() {
                                                     </div>
                                                 ))}
                                                 {newProp.images.length === 0 && (
-                                                    <div className="col-span-full flex items-center justify-center text-slate-700 text-[10px] font-bold uppercase tracking-widest">
+                                                    <div className="w-full flex items-center justify-center text-slate-700 text-[10px] font-bold uppercase tracking-widest">
                                                         Nenhuma foto selecionada
                                                     </div>
                                                 )}
                                             </div>
 
-                                            <div className="col-span-1 space-y-4">
-                                                <div className="space-y-1">
-                                                    <label className="text-[9px] text-slate-600 font-black uppercase tracking-widest ml-1">Destaque Home</label>
-                                                    <label className="flex items-center cursor-pointer gap-3 bg-slate-950/50 border border-slate-800 p-3 rounded-2xl hover:border-slate-700 transition-all">
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={newProp.is_destaque === 1}
-                                                            onChange={(e) => setNewProp({ ...newProp, is_destaque: e.target.checked ? 1 : 0 })}
-                                                            className="w-4 h-4 rounded-md bg-slate-900 border-slate-800 text-blue-500 focus:ring-0 focus:ring-offset-0"
-                                                        />
-                                                        <span className="text-[10px] text-white font-bold uppercase tracking-tighter">Ativar</span>
-                                                    </label>
-                                                </div>
+                                            <div className="flex items-center gap-3 bg-slate-950/50 border border-slate-800 p-3 rounded-2xl">
+                                                <input
+                                                    type="checkbox"
+                                                    id="is_destaque"
+                                                    checked={newProp.is_destaque === 1}
+                                                    onChange={(e) => setNewProp({ ...newProp, is_destaque: e.target.checked ? 1 : 0 })}
+                                                    className="w-4 h-4 rounded-md bg-slate-900 border-slate-800 text-blue-500 focus:ring-0 focus:ring-offset-0"
+                                                />
+                                                <label htmlFor="is_destaque" className="text-[10px] text-white font-bold uppercase tracking-widest cursor-pointer">Destaque na Home</label>
                                             </div>
                                         </div>
                                     </div>
@@ -488,7 +526,7 @@ export default function PropertyManagement() {
                                             </div>
                                         </div>
 
-                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                                             <div className="space-y-1">
                                                 <label className="text-[9px] text-slate-600 font-black uppercase tracking-widest ml-1">Valor Venda</label>
                                                 <input
@@ -602,8 +640,8 @@ export default function PropertyManagement() {
                                     </div>
 
                                     <div className="pt-6 border-t border-slate-800 flex flex-col md:flex-row gap-4">
-                                        <button type="button" onClick={() => setShowAddModal(false)} className="px-8 py-4 rounded-2xl border border-slate-800 text-slate-500 text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 transition-all flex-1">Cancelar</button>
-                                        <button type="submit" className="bg-blue-600 hover:bg-blue-500 px-12 py-4 rounded-2xl text-white text-[10px] font-black uppercase tracking-widest transition-all shadow-xl shadow-blue-600/30 flex-2">Salvar no Inventário</button>
+                                        <button type="button" onClick={() => setShowAddModal(false)} className="px-8 py-4 rounded-2xl border border-slate-800 text-slate-500 text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 transition-all flex-1 order-2 md:order-1">Cancelar</button>
+                                        <button type="submit" className="bg-blue-600 hover:bg-blue-500 px-12 py-4 rounded-2xl text-white text-[10px] font-black uppercase tracking-widest transition-all shadow-xl shadow-blue-600/30 flex-2 order-1 md:order-2">Salvar no Inventário</button>
                                     </div>
                                 </form>
                             </div>

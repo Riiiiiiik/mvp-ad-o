@@ -95,9 +95,9 @@ export default function AnalyticsPage() {
 
     return (
         <AdminLayout activePath="#/admin/analytics">
-            <div className="p-8">
-                <header className="mb-10">
-                    <h1 className="text-3xl font-black text-white tracking-tighter uppercase">Insights do Portfólio</h1>
+            <div className="p-4 md:p-8">
+                <header className="mb-8 md:mb-10">
+                    <h1 className="text-2xl md:text-3xl font-black text-white tracking-tighter uppercase">Insights do Portfólio</h1>
                     <p className="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em] mt-1">Análise de Performance & Engajamento</p>
                 </header>
 
@@ -108,28 +108,20 @@ export default function AnalyticsPage() {
                 ) : stats ? (
                     <>
                         {/* Top KPIs */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-                            <div className="bg-slate-900/40 border border-slate-800/50 p-6 rounded-[2rem] backdrop-blur-sm">
-                                <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-2">Taxa de Conversão</p>
-                                <div className="flex items-baseline gap-2">
-                                    <span className="text-4xl font-black text-white tracking-tighter">{stats.conversion_rate}%</span>
-                                    <span className="text-[10px] text-emerald-400 font-bold uppercase">Leads/Visitas</span>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 mb-8 md:mb-10">
+                            {[
+                                { label: 'Taxa de Conversão', value: `${stats.conversion_rate}%`, sub: 'Leads/Visitas', color: 'text-emerald-400' },
+                                { label: 'Total de Audiência', value: stats.total_views, sub: 'Visualizações', color: 'text-blue-400' },
+                                { label: 'Base de Leads', value: stats.total_leads, sub: 'Contatos', color: 'text-purple-400' },
+                            ].map((kpi, i) => (
+                                <div key={i} className="bg-slate-900/40 border border-slate-800/50 p-6 rounded-2xl md:rounded-[2rem] backdrop-blur-sm">
+                                    <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-2">{kpi.label}</p>
+                                    <div className="flex items-baseline gap-2">
+                                        <span className="text-3xl md:text-4xl font-black text-white tracking-tighter">{kpi.value}</span>
+                                        <span className={`text-[10px] ${kpi.color} font-bold uppercase`}>{kpi.sub}</span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="bg-slate-900/40 border border-slate-800/50 p-6 rounded-[2rem] backdrop-blur-sm">
-                                <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-2">Total de Audiência</p>
-                                <div className="flex items-baseline gap-2">
-                                    <span className="text-4xl font-black text-white tracking-tighter">{stats.total_views}</span>
-                                    <span className="text-[10px] text-blue-400 font-bold uppercase">Visualizações</span>
-                                </div>
-                            </div>
-                            <div className="bg-slate-900/40 border border-slate-800/50 p-6 rounded-[2rem] backdrop-blur-sm">
-                                <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-2">Base de Leads</p>
-                                <div className="flex items-baseline gap-2">
-                                    <span className="text-4xl font-black text-white tracking-tighter">{stats.total_leads}</span>
-                                    <span className="text-[10px] text-purple-400 font-bold uppercase">Contatos</span>
-                                </div>
-                            </div>
+                            ))}
                         </div>
 
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">

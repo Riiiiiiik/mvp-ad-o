@@ -11,6 +11,8 @@ export default function AdminLayout({ children, activePath }: AdminLayoutProps) 
     const [userEmail, setUserEmail] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
 
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
     useEffect(() => {
         const checkSession = async () => {
             const { data: { session } } = await supabase.auth.getSession();
@@ -42,6 +44,11 @@ export default function AdminLayout({ children, activePath }: AdminLayoutProps) 
 
         return () => subscription.unsubscribe();
     }, []);
+
+    // Close sidebar on navigation (for mobile)
+    useEffect(() => {
+        setIsSidebarOpen(false);
+    }, [activePath]);
 
     const handleLogout = async () => {
         await supabase.auth.signOut();
@@ -114,15 +121,48 @@ export default function AdminLayout({ children, activePath }: AdminLayoutProps) 
     ];
 
     return (
-        <div className="flex h-screen bg-slate-950 text-slate-200 font-sans overflow-hidden">
+        <div className="flex h-screen bg-slate-950 text-slate-200 font-sans overflow-hidden relative">
+            {/* Mobile Header */}
+            <header className="lg:hidden fixed top-0 inset-x-0 h-16 bg-slate-950 border-b border-slate-900 z-40 flex items-center justify-between px-6">
+                <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center font-black text-white text-xs">AS</div>
+                    <span className="font-black uppercase tracking-tighter text-sm">Back Office</span>
+                </div>
+                <button
+                    onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                    className="p-2 text-slate-400 hover:text-white transition-colors"
+                >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={isSidebarOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} />
+                    </svg>
+                </button>
+            </header>
+
+            {/* Sidebar Overlay */}
+            {isSidebarOpen && (
+                <div
+                    className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[45] lg:hidden"
+                    onClick={() => setIsSidebarOpen(false)}
+                />
+            )}
+
             {/* Sidebar */}
-            <aside className="w-64 border-r border-slate-900 bg-slate-950 flex flex-col">
+            <aside className={`
+                fixed inset-y-0 left-0 z-50 w-64 border-r border-slate-900 bg-slate-950 flex flex-col transition-transform duration-300 lg:relative lg:translate-x-0
+                ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+            `}>
                 <div className="p-6 border-b border-slate-900">
-                    <h1 className="text-xl font-black text-white tracking-tighter uppercase text-center">Back Office</h1>
+                    <h1 className="text-xl font-black text-white tracking-tighter uppercase text-center hidden lg:block">Back Office</h1>
+                    <div className="lg:hidden flex items-center justify-between mb-4">
+                        <span className="text-xl font-black text-white tracking-tighter uppercase">Menu</span>
+                        <button onClick={() => setIsSidebarOpen(false)} className="text-slate-500 hover:text-white">
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                    </div>
                     <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest text-center mt-1">Real Estate CRM</p>
                 </div>
 
-                <nav className="flex-1 p-4 space-y-2 mt-4">
+                <nav className="flex-1 p-4 space-y-1 mt-4 overflow-y-auto custom-scrollbar">
                     {menuItems.map((item) => (
                         item.path ? (
                             <a
@@ -130,7 +170,7 @@ export default function AdminLayout({ children, activePath }: AdminLayoutProps) 
                                 href={item.path}
                                 target={(item as any).external ? "_blank" : undefined}
                                 rel={(item as any).external ? "noopener noreferrer" : undefined}
-                                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-bold text-sm ${activePath === item.path
+                                className={`flex items-center gap-3 px-4 py-3 rounded-2xl transition-all font-bold text-sm ${activePath === item.path
                                     ? 'bg-blue-600/10 text-blue-400 border border-blue-600/20'
                                     : 'text-slate-400 hover:bg-slate-900 hover:text-white'
                                     }`}
@@ -142,7 +182,7 @@ export default function AdminLayout({ children, activePath }: AdminLayoutProps) 
                             <button
                                 key={item.name}
                                 onClick={item.onClick}
-                                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-bold text-sm text-slate-400 hover:bg-red-500/10 hover:text-red-500"
+                                className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all font-bold text-sm text-slate-400 hover:bg-red-500/10 hover:text-red-500"
                             >
                                 {item.icon}
                                 {item.name}
@@ -160,7 +200,7 @@ export default function AdminLayout({ children, activePath }: AdminLayoutProps) 
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 overflow-y-auto bg-slate-950 custom-scrollbar">
+            <main className="flex-1 overflow-y-auto bg-slate-950 custom-scrollbar pt-16 lg:pt-0">
                 {children}
             </main>
         </div>

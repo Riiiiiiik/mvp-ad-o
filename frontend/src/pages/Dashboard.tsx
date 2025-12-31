@@ -184,17 +184,17 @@ export default function Dashboard() {
 
     return (
         <AdminLayout activePath="#/admin">
-            <div className="p-8">
+            <div className="p-4 md:p-8">
                 {/* Header */}
-                <header className="flex justify-between items-center mb-8">
+                <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
                     <div>
-                        <h1 className="text-3xl font-black text-white tracking-tighter uppercase">Visão Geral</h1>
-                        <p className="text-xs text-slate-500 font-bold uppercase tracking-widest mt-1">Como está o negócio hoje?</p>
+                        <h1 className="text-2xl md:text-3xl font-black text-white tracking-tighter uppercase">Visão Geral</h1>
+                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Como está o negócio hoje?</p>
                     </div>
 
                     <button
                         onClick={fetchData}
-                        className="flex items-center gap-2 bg-slate-900 border border-slate-800 px-4 py-2 rounded-xl hover:bg-slate-800 transition-all text-white text-xs font-bold"
+                        className="flex items-center gap-2 bg-slate-900 border border-slate-800 px-4 py-2 rounded-xl hover:bg-slate-800 transition-all text-white text-xs font-bold w-full md:w-auto justify-center"
                     >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -204,19 +204,19 @@ export default function Dashboard() {
                 </header>
 
                 {/* KPI Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-10">
                     {[
                         { label: 'Leads Hoje', value: stats?.leads_today ?? '...', iconColor: 'text-blue-500', bgColor: 'bg-blue-500/10' },
                         { label: 'Leads Semana', value: stats?.leads_week ?? '...', iconColor: 'text-purple-500', bgColor: 'bg-purple-500/10' },
                         { label: 'Imóveis Ativos', value: stats?.active_properties ?? '...', iconColor: 'text-emerald-500', bgColor: 'bg-emerald-500/10' },
                         { label: 'Visualizações', value: stats?.total_views ?? '...', iconColor: 'text-amber-500', bgColor: 'bg-amber-500/10' },
                     ].map((kpi, i) => (
-                        <div key={i} className="bg-slate-900/50 border border-slate-800/50 p-6 rounded-3xl hover:border-slate-700 transition-all">
-                            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em] mb-2">{kpi.label}</p>
+                        <div key={i} className="bg-slate-900/50 border border-slate-800/50 p-4 md:p-6 rounded-2xl md:rounded-3xl hover:border-slate-700 transition-all">
+                            <p className="text-[9px] md:text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em] mb-2">{kpi.label}</p>
                             <div className="flex items-end justify-between">
-                                <h3 className="text-4xl font-black text-white">{kpi.value}</h3>
-                                <div className={`${kpi.bgColor} ${kpi.iconColor} p-2 rounded-xl`}>
-                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <h3 className="text-2xl md:text-4xl font-black text-white">{kpi.value}</h3>
+                                <div className={`${kpi.bgColor} ${kpi.iconColor} p-1.5 md:p-2 rounded-lg md:rounded-xl`}>
+                                    <svg className="w-4 h-4 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         {i === 0 && <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />}
                                         {i === 1 && <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />}
                                         {i === 2 && <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />}
@@ -230,18 +230,18 @@ export default function Dashboard() {
 
                 {/* Funnel Section Wrapper */}
                 <section>
-                    <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-xl font-bold text-white uppercase tracking-tight">Funil de Vendas</h2>
-                        <span className="text-[10px] text-emerald-400 font-bold uppercase tracking-widest bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">Real-time Sync</span>
+                    <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-2">
+                        <h2 className="text-lg md:text-xl font-bold text-white uppercase tracking-tight">Funil de Vendas</h2>
+                        <span className="w-fit text-[9px] md:text-[10px] text-emerald-400 font-bold uppercase tracking-widest bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">Real-time Sync</span>
                     </div>
 
-                    <div className="flex gap-6 overflow-x-auto pb-6 scrollbar-thin scrollbar-thumb-slate-800 scrollbar-track-transparent">
+                    <div className="flex gap-4 md:gap-6 overflow-x-auto pb-6 scrollbar-thin scrollbar-thumb-slate-800 scrollbar-track-transparent snap-x">
                         {STATUS_COLUMNS.map((column) => (
                             <div
                                 key={column.id}
                                 onDragOver={onDragOver}
                                 onDrop={() => onDrop(column.id)}
-                                className="w-80 flex-shrink-0 flex flex-col bg-slate-900/40 rounded-3xl border border-slate-800/50 p-4 min-h-[500px] transition-colors hover:bg-slate-900/60"
+                                className="w-[280px] md:w-80 flex-shrink-0 flex flex-col bg-slate-900/40 rounded-3xl border border-slate-800/50 p-4 min-h-[500px] transition-colors hover:bg-slate-900/60 snap-center"
                             >
                                 <div className="flex items-center justify-between mb-6 px-2">
                                     <h2 className={`font-black text-[10px] uppercase tracking-[0.2em] ${column.color.split(' ')[1]}`}>

@@ -294,35 +294,35 @@ export default function LandingPage() {
                 </div>
 
                 <div className="max-w-7xl mx-auto px-6 relative z-20 w-full text-center">
-                    <h1 className="text-6xl md:text-9xl font-black text-white mb-8 tracking-tighter leading-none uppercase drop-shadow-2xl">
+                    <h1 className="text-5xl md:text-9xl font-black text-white mb-6 md:mb-8 tracking-tighter leading-[0.9] md:leading-none uppercase drop-shadow-2xl">
                         {config?.hero_title?.split(' ')[0] || 'ADÃO'} <br />
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-primary to-amber-200">
                             {config?.hero_title?.split(' ').slice(1).join(' ') || 'SILVA'}
                         </span>
                     </h1>
-                    <p className="text-xl md:text-3xl text-slate-100 font-medium leading-relaxed max-w-2xl mx-auto mb-12 drop-shadow-lg opacity-90">
+                    <p className="text-lg md:text-3xl text-slate-100 font-medium leading-relaxed max-w-2xl mx-auto mb-8 md:mb-12 drop-shadow-lg opacity-90 px-4 md:px-0">
                         {config?.hero_subtitle || 'Imóveis de Luxo & Investimentos Exclusivos'}
                     </p>
 
                     {/* Search Bar */}
-                    <div className="bg-white dark:bg-slate-900 p-2 md:p-3 rounded-2xl md:rounded-full shadow-2xl shadow-slate-200 dark:shadow-black/20 border border-gray-100 dark:border-white/5 flex flex-col md:flex-row items-center gap-2 max-w-3xl mx-auto">
-                        <div className="flex-1 flex items-center px-4 w-full">
-                            <svg className="w-5 h-5 text-gray-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                    <div className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-md p-2 md:p-3 rounded-3xl md:rounded-full shadow-2xl border border-white/10 flex flex-col md:flex-row items-center gap-2 max-w-3xl mx-auto">
+                        <div className="flex-1 flex items-center px-4 w-full h-14 md:h-auto">
+                            <svg className="w-5 h-5 text-gray-400 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                             <input
                                 type="text"
                                 placeholder="Bairro ou Código"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full bg-transparent border-none outline-none focus:ring-0 text-slate-700 dark:text-white font-medium placeholder-gray-400"
+                                className="w-full bg-transparent border-none outline-none focus:ring-0 text-slate-700 dark:text-white font-bold text-sm md:text-base placeholder-gray-400"
                             />
                         </div>
-                        <div className="hidden md:block w-px h-10 bg-gray-100 mx-2"></div>
-                        <div className="flex-1 hidden md:flex items-center px-4">
+                        <div className="hidden md:block w-px h-10 bg-gray-100 dark:bg-white/10 mx-2"></div>
+                        <div className="hidden md:flex flex-1 items-center px-4">
                             <svg className="w-5 h-5 text-gray-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
                             <select
                                 value={selectedType}
                                 onChange={(e) => setSelectedType(e.target.value)}
-                                className="bg-transparent border-none focus:ring-0 text-slate-600 font-medium cursor-pointer"
+                                className="bg-transparent border-none focus:ring-0 text-slate-600 dark:text-slate-300 font-bold text-sm cursor-pointer"
                             >
                                 <option>Tipo de imóvel</option>
                                 <option>Apartamento</option>
@@ -334,15 +334,15 @@ export default function LandingPage() {
                         </div>
                         <button
                             onClick={() => handleSearch()}
-                            className="bg-brand-primary text-white p-4 md:px-8 rounded-xl md:rounded-full hover:bg-brand-dark transition-all shadow-lg shadow-brand-primary/20 w-full md:w-auto"
+                            className="bg-brand-primary text-brand-dark md:text-white h-14 md:h-auto md:px-8 rounded-2xl md:rounded-full hover:bg-brand-dark hover:text-white transition-all shadow-lg shadow-brand-primary/20 w-full md:w-auto font-black uppercase text-xs tracking-widest flex items-center justify-center gap-2"
                         >
-                            <span className="md:hidden font-bold">Buscar Imóveis</span>
-                            <svg className="hidden md:block w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                            <span>Explorar Imóveis</span>
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                         </button>
                     </div>
 
-                    <div className="mt-16 flex flex-wrap justify-center gap-4 md:gap-8">
-                        {PROPERTY_CATEGORIES.map(cat => (
+                    <div className="mt-12 md:mt-16 flex flex-wrap justify-center gap-4 md:gap-8">
+                        {PROPERTY_CATEGORIES.slice(0, 4).map(cat => (
                             <div
                                 key={cat.id}
                                 onClick={() => {
@@ -355,45 +355,39 @@ export default function LandingPage() {
                                 }}
                                 className="group cursor-pointer flex flex-col items-center"
                             >
-                                <div className="w-16 h-16 bg-white dark:bg-slate-900 rounded-3xl shadow-lg border border-gray-100 dark:border-white/5 flex items-center justify-center text-2xl group-hover:-translate-y-2 transition-all group-hover:bg-brand-primary/10 group-hover:border-brand-primary/20">
+                                <div className="w-14 h-14 md:w-16 md:h-16 bg-white dark:bg-slate-900 rounded-2xl md:rounded-3xl shadow-lg border border-gray-100 dark:border-white/5 flex items-center justify-center text-xl md:text-2xl group-hover:-translate-y-2 transition-all group-hover:bg-brand-primary/10 group-hover:border-brand-primary/20">
                                     {cat.icon}
                                 </div>
-                                <span className="mt-3 text-[10px] font-black uppercase tracking-widest text-slate-400 group-hover:text-brand-primary transition-colors">
+                                <span className="mt-2 md:mt-3 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-400 group-hover:text-brand-primary transition-colors">
                                     {cat.label}
                                 </span>
                             </div>
                         ))}
-                        <button
-                            onClick={() => document.getElementById('imoveis')?.scrollIntoView({ behavior: 'smooth' })}
-                            className="bg-brand-dark text-white px-10 py-5 rounded-2xl font-black uppercase tracking-widest hover:bg-brand-primary transition-all shadow-xl shadow-brand-dark/20 text-sm"
-                        >
-                            Explorar Portfólio
-                        </button>
                     </div>
                 </div>
             </section>
 
 
             {/* Catalog Section */}
-            <section id="imoveis" className="pt-32 pb-20">
+            <section id="imoveis" className="pt-20 md:pt-32 pb-16 md:pb-20">
                 <div className="max-w-7xl mx-auto px-6">
-                    <div className="flex justify-between items-end mb-12">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 md:mb-12 gap-4">
                         <div>
-                            <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter uppercase">Lançamentos em Destaque</h2>
-                            <p className="text-slate-500 dark:text-slate-400 font-medium mt-2">As melhores oportunidades curadas por especialistas.</p>
+                            <h2 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white tracking-tighter uppercase leading-none">Lançamentos em Destaque</h2>
+                            <p className="text-sm md:text-base text-slate-500 dark:text-slate-400 font-medium mt-2">As melhores oportunidades curadas por especialistas.</p>
                         </div>
                         <button
                             onClick={() => {
                                 setSelectedType('Tipo de imóvel');
                                 handleSearch('Tipo de imóvel');
                             }}
-                            className="hidden md:block text-brand-primary font-black text-xs uppercase tracking-widest border-b-2 border-brand-primary pb-1 hover:text-brand-dark hover:border-brand-dark transition-all"
+                            className="text-brand-primary font-black text-[10px] md:text-xs uppercase tracking-widest border-b-2 border-brand-primary pb-1 hover:text-brand-dark hover:border-brand-dark transition-all"
                         >
-                            Ver todos
+                            Ver todos os imóveis
                         </button>
                     </div>
 
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
                         {(highlightedProperties.length > 0 ? highlightedProperties : activeProperties.slice(0, 6)).map(prop => (
                             <div
                                 key={prop.id}
@@ -401,9 +395,9 @@ export default function LandingPage() {
                                     setSelectedProperty(prop);
                                     setActivePhoto(prop.main_image_url || '');
                                 }}
-                                className="group bg-white dark:bg-slate-900 rounded-[2.5rem] overflow-hidden border border-gray-100 dark:border-white/5 shadow-xl shadow-slate-100 dark:shadow-black/20 hover:shadow-2xl hover:shadow-slate-200 transition-all cursor-pointer"
+                                className="group bg-white dark:bg-slate-900 rounded-[2rem] md:rounded-[2.5rem] overflow-hidden border border-gray-100 dark:border-white/5 shadow-xl hover:shadow-2xl transition-all cursor-pointer"
                             >
-                                <div className="relative h-72 overflow-hidden">
+                                <div className="relative h-64 md:h-72 overflow-hidden">
                                     <picture>
                                         <source srcSet={prop.thumb_image_url || prop.main_image_url} media="(max-width: 600px)" />
                                         <img
@@ -412,38 +406,38 @@ export default function LandingPage() {
                                             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[1.5s]"
                                         />
                                     </picture>
-                                    <div className="absolute top-6 left-6 flex flex-col gap-2">
-                                        <div className="bg-brand-dark/80 backdrop-blur-md text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">
+                                    <div className="absolute top-4 left-4 md:top-6 md:left-6 flex flex-col gap-2">
+                                        <div className="bg-brand-dark/80 backdrop-blur-md text-white px-3 md:px-4 py-1.5 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-widest">
                                             {prop.tipo}
                                         </div>
                                         {prop.is_destaque === 1 && (
-                                            <div className="bg-amber-500 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg shadow-amber-500/20">
+                                            <div className="bg-amber-500 text-white px-3 md:px-4 py-1.5 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-widest shadow-lg">
                                                 Destaque
                                             </div>
                                         )}
                                     </div>
-                                    <div className="absolute bottom-6 left-6 right-6">
-                                        <div className="bg-white/10 backdrop-blur-md border border-white/20 px-6 py-4 rounded-3xl text-white">
-                                            <p className="font-black text-xl tracking-tighter">{prop.preco || 'Sob consulta'}</p>
+                                    <div className="absolute bottom-4 left-4 right-4 md:bottom-6 md:left-6 md:right-6">
+                                        <div className="bg-black/30 backdrop-blur-md border border-white/20 px-5 md:px-6 py-3 md:py-4 rounded-2xl md:rounded-3xl text-white">
+                                            <p className="font-black text-lg md:text-xl tracking-tighter">{prop.preco || 'Sob consulta'}</p>
                                         </div>
                                     </div>
                                 </div>
-                                <div className="p-8">
-                                    <p className="text-[10px] font-black text-brand-primary uppercase tracking-widest mb-2">{prop.localizacao}</p>
-                                    <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-6 tracking-tighter leading-tight group-hover:text-brand-primary transition-colors">{prop.titulo}</h3>
+                                <div className="p-6 md:p-8">
+                                    <p className="text-[9px] md:text-[10px] font-black text-brand-primary uppercase tracking-widest mb-2">{prop.localizacao}</p>
+                                    <h3 className="text-xl md:text-2xl font-black text-slate-900 dark:text-white mb-6 tracking-tighter leading-tight group-hover:text-brand-primary transition-colors line-clamp-2">{prop.titulo}</h3>
 
                                     <div className="grid grid-cols-3 divide-x divide-gray-100 dark:divide-white/5 border-t border-gray-100 dark:border-white/5 pt-6">
-                                        <div className="text-center px-2">
-                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Área</p>
-                                            <p className="font-black text-slate-800 dark:text-slate-200">{prop.area || '-'}</p>
+                                        <div className="text-center px-1">
+                                            <p className="text-[8px] md:text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Área</p>
+                                            <p className="font-black text-sm md:text-base text-slate-800 dark:text-slate-200">{prop.area || '-'}</p>
                                         </div>
-                                        <div className="text-center px-2">
-                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Quartos</p>
-                                            <p className="font-black text-slate-800 dark:text-slate-200">{prop.quartos || '0'}</p>
+                                        <div className="text-center px-1">
+                                            <p className="text-[8px] md:text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Dorms</p>
+                                            <p className="font-black text-sm md:text-base text-slate-800 dark:text-slate-200">{prop.quartos || '0'}</p>
                                         </div>
-                                        <div className="text-center px-2">
-                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Banheiros</p>
-                                            <p className="font-black text-slate-800 dark:text-slate-200">{prop.banheiros || '0'}</p>
+                                        <div className="text-center px-1">
+                                            <p className="text-[8px] md:text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Suítes</p>
+                                            <p className="font-black text-sm md:text-base text-slate-800 dark:text-slate-200">{prop.banheiros || '0'}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -483,59 +477,83 @@ export default function LandingPage() {
             </section>
 
             {/* Lead Capture Section */}
-            <section id="lead-capture" className="py-24 bg-brand-dark relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-1/3 h-full bg-brand-primary opacity-10 skew-x-12 translate-x-1/2"></div>
-                <div className="max-w-5xl mx-auto px-6 relative z-10 grid md:grid-cols-2 gap-16 items-center">
+            <section id="lead-capture" className="py-20 md:py-24 bg-brand-dark relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-1/3 h-full bg-brand-primary opacity-5 md:opacity-10 skew-x-12 translate-x-1/2"></div>
+                <div className="max-w-5xl mx-auto px-6 relative z-10 grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-center">
                     <div>
-                        <h2 className="text-4xl font-black text-white mb-6 leading-tight tracking-tighter">
-                            Ainda não encontrou o que procurava?
+                        <h2 className="text-3xl md:text-4xl font-black text-white mb-6 leading-tight tracking-tighter uppercase">
+                            Não encontrou o que procurava?
                         </h2>
-                        <p className="text-slate-400 text-lg mb-8">
-                            Estamos prontos para fazer um filtro personalizado para você. Deixe seu contato e receba uma curadoria exclusiva em poucos minutos.
+                        <p className="text-slate-400 text-base md:text-lg mb-8 font-medium">
+                            Nossa equipe de especialistas está pronta para realizar uma curadoria exclusiva para o seu perfil de investimento.
                         </p>
                     </div>
 
-                    <div className="bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-2xl border border-gray-100 dark:border-white/5 transition-colors">
+                    <div className="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-[2rem] md:rounded-3xl shadow-2xl border border-gray-100 dark:border-white/5 transition-colors">
                         {status === 'success' ? (
-                            <div className="text-center py-10">
-                                <div className="w-20 h-20 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-6">
-                                    <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>
+                            <div className="text-center py-10 animate-in zoom-in duration-500">
+                                <div className="w-16 h-16 md:w-20 md:h-20 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl shadow-emerald-500/10">
+                                    <svg className="w-8 h-8 md:w-10 md:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>
                                 </div>
-                                <h3 className="text-2xl font-black text-brand-dark dark:text-white mb-2">Sucesso!</h3>
-                                <p className="text-slate-500 font-medium">Um especialista entrará em contato em breve.</p>
-                                <button onClick={() => setStatus('idle')} className="mt-8 text-brand-primary font-black text-xs uppercase tracking-widest border-b-2 border-brand-primary/10 hover:border-brand-primary transition-all pb-1">Fazer nova consulta</button>
+                                <h3 className="text-xl md:text-2xl font-black text-brand-dark dark:text-white mb-2 uppercase tracking-tighter">Informações Enviadas!</h3>
+                                <p className="text-slate-500 dark:text-slate-400 font-medium text-sm md:text-base">Em instantes um consultor entrará em contato com você via WhatsApp.</p>
+                                <button
+                                    onClick={() => setStatus('idle')}
+                                    className="mt-8 text-brand-primary font-black text-[10px] md:text-xs uppercase tracking-widest border-b-2 border-brand-primary/10 hover:border-brand-primary transition-all pb-1"
+                                >
+                                    Fazer novo pedido de curadoria
+                                </button>
                             </div>
                         ) : (
-                            <form onSubmit={handleLeadSubmit} className="space-y-6">
+                            <form onSubmit={handleLeadSubmit} className="space-y-4 md:space-y-6">
+                                {status === 'error' && (
+                                    <div className="bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/30 p-4 rounded-2xl text-red-600 dark:text-red-400 text-xs font-bold flex items-center gap-3 animate-in slide-in-from-top-2">
+                                        <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                        Ops! Algo deu errado. Por favor, tente novamente ou nos ligue diretamente.
+                                    </div>
+                                )}
                                 <div>
-                                    <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 ml-1">Seu Nome Completo</label>
+                                    <label className="block text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 ml-1">Seu Nome Completo</label>
                                     <input
                                         required
                                         type="text"
                                         value={leadName}
                                         onChange={(e) => setLeadName(e.target.value)}
-                                        className="w-full bg-gray-50 border border-gray-100 rounded-xl px-5 py-3.5 focus:ring-2 focus:ring-brand-primary focus:border-transparent outline-none transition-all text-slate-800"
-                                        placeholder="Ex: João da Silva"
+                                        className="w-full bg-gray-50 dark:bg-brand-dark border border-gray-100 dark:border-white/5 rounded-xl px-4 py-3 md:px-5 md:py-3.5 focus:ring-2 focus:ring-brand-primary outline-none text-slate-800 dark:text-white font-bold transition-all"
+                                        placeholder="Ex: Rikelme Silva"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 ml-1">WhatsApp de Contato</label>
+                                    <label className="block text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 ml-1">WhatsApp com DDD</label>
                                     <input
                                         required
                                         type="tel"
                                         value={leadWhatsapp}
                                         onChange={(e) => setLeadWhatsapp(e.target.value)}
-                                        className="w-full bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-white/5 rounded-xl px-5 py-3.5 focus:ring-2 focus:ring-brand-primary focus:border-transparent outline-none transition-all text-slate-800 dark:text-white"
-                                        placeholder="(11) 98765-4321"
+                                        className="w-full bg-gray-50 dark:bg-brand-dark border border-gray-100 dark:border-white/5 rounded-xl px-4 py-3 md:px-5 md:py-3.5 focus:ring-2 focus:ring-brand-primary outline-none text-slate-800 dark:text-white font-bold transition-all"
+                                        placeholder="(00) 00000-0000"
                                     />
                                 </div>
                                 <button
                                     disabled={status === 'loading'}
-                                    className="w-full bg-brand-primary hover:bg-brand-dark text-white font-black py-4 rounded-xl shadow-lg shadow-red-200 transition-all uppercase tracking-widest text-sm"
+                                    className={`w-full font-black py-4 md:py-5 rounded-xl shadow-lg transition-all uppercase tracking-widest text-[10px] md:text-xs flex items-center justify-center gap-3 ${status === 'loading'
+                                            ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                                            : 'bg-brand-primary text-brand-dark hover:bg-brand-dark hover:text-white shadow-brand-primary/20'
+                                        }`}
                                 >
-                                    {status === 'loading' ? 'Enviando...' : 'Pedir consultoria grátis'}
+                                    {status === 'loading' ? (
+                                        <>
+                                            <svg className="animate-spin h-5 w-5 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                            Enviando...
+                                        </>
+                                    ) : 'Receber Consultoria Gratuita'}
                                 </button>
-                                <p className="text-center text-[10px] text-slate-400 font-bold uppercase tracking-widest">Atendimento 24h em tempo real</p>
+                                <p className="text-center text-[8px] md:text-[9px] text-slate-400 font-bold uppercase tracking-[0.2em] mt-2">
+                                    Atendimento humanizado em tempo real
+                                </p>
                             </form>
                         )}
                     </div>
@@ -547,22 +565,22 @@ export default function LandingPage() {
 
             {/* Modal de Detalhes do Imóvel */}
             {selectedProperty && (
-                <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 md:p-6 animate-in fade-in duration-300">
+                <div className="fixed inset-0 z-[110] flex items-center justify-center animate-in fade-in duration-300">
                     <div
-                        className="absolute inset-0 bg-brand-dark/95 backdrop-blur-xl"
+                        className="absolute inset-0 bg-brand-dark/98 backdrop-blur-xl"
                         onClick={() => setSelectedProperty(null)}
                     ></div>
 
-                    <div className="relative bg-white dark:bg-slate-900 w-full max-w-6xl max-h-[92vh] rounded-[2.5rem] md:rounded-[3.5rem] shadow-2xl overflow-hidden flex flex-col md:flex-row animate-in zoom-in-95 duration-500 border border-white/10">
+                    <div className="relative bg-white dark:bg-slate-900 w-full h-full md:h-auto md:max-w-6xl md:max-h-[92vh] md:rounded-[3.5rem] shadow-2xl overflow-hidden flex flex-col md:flex-row animate-in zoom-in-95 duration-500 border border-white/5">
                         <button
                             onClick={() => setSelectedProperty(null)}
-                            className="absolute top-6 right-6 z-20 w-10 h-10 bg-black/20 hover:bg-black/40 backdrop-blur-md rounded-full flex items-center justify-center text-white transition-all shadow-lg"
+                            className="absolute top-4 right-4 md:top-6 md:right-6 z-20 w-10 h-10 md:w-12 md:h-12 bg-black/40 hover:bg-black/60 backdrop-blur-md rounded-full flex items-center justify-center text-white transition-all shadow-xl"
                         >
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
                         </button>
 
                         <div
-                            className="w-full md:w-3/5 bg-slate-100 dark:bg-black relative group/gallery overflow-hidden flex flex-col h-[40vh] md:h-auto"
+                            className="w-full md:w-3/5 bg-slate-100 dark:bg-black relative group/gallery overflow-hidden flex flex-col h-[45vh] md:h-auto shrink-0"
                             onTouchStart={handleTouchStart}
                             onTouchMove={handleTouchMove}
                             onTouchEnd={handleTouchEnd}
@@ -576,81 +594,83 @@ export default function LandingPage() {
                                     allowFullScreen
                                 ></iframe>
                             ) : (
-                                <>
-                                    <img
-                                        src={activePhoto || selectedProperty.main_image_url}
-                                        className="w-full h-full object-cover transition-opacity duration-500"
-                                        alt={selectedProperty.titulo}
-                                    />
-                                    {/* Navigation Buttons Removed for Swipe */}
-
-                                </>
+                                <img
+                                    src={activePhoto || selectedProperty.main_image_url}
+                                    className="w-full h-full object-cover transition-opacity duration-500"
+                                    alt={selectedProperty.titulo}
+                                />
                             )}
 
                             {/* Galeria de Thumbnails no Modal */}
                             {selectedProperty.images && selectedProperty.images.length > 1 && (
-                                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 p-3 bg-black/20 backdrop-blur-md rounded-2xl max-w-[90%] overflow-x-auto no-scrollbar scroll-smooth z-30">
-                                    {(selectedProperty.images || []).map((img, idx) => (
-                                        <button
-                                            key={idx}
-                                            onClick={() => {
-                                                setActivePhoto(img.image_url);
-                                                setShowVideo(false);
-                                            }}
-                                            className={`w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 border-2 transition-all ${activePhoto === img.image_url && !showVideo ? 'border-brand-primary scale-110 shadow-lg' : 'border-white/20 hover:border-white/50'}`}
-                                        >
-                                            <img src={img.thumb_url || img.image_url} className="w-full h-full object-cover" alt={`Preview ${idx}`} />
-                                        </button>
-                                    ))}
+                                <div className="absolute bottom-4 md:bottom-6 left-0 right-0 flex justify-center gap-2 p-3 z-30 overflow-x-auto no-scrollbar">
+                                    <div className="flex gap-2 p-2 bg-black/30 backdrop-blur-md rounded-2xl max-w-full">
+                                        {(selectedProperty.images || []).map((img, idx) => (
+                                            <button
+                                                key={idx}
+                                                onClick={() => {
+                                                    setActivePhoto(img.image_url);
+                                                    setShowVideo(false);
+                                                }}
+                                                className={`w-12 h-12 md:w-14 md:h-14 rounded-xl overflow-hidden flex-shrink-0 border-2 transition-all ${activePhoto === img.image_url && !showVideo ? 'border-brand-primary scale-105 shadow-lg' : 'border-white/20'}`}
+                                            >
+                                                <img src={img.thumb_url || img.image_url} className="w-full h-full object-cover" alt={`Preview ${idx}`} />
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
                             )}
                         </div>
 
-                        <div className="w-full md:w-2/5 p-8 md:p-14 overflow-y-auto bg-white dark:bg-slate-900">
+                        <div className="flex-1 p-6 md:p-14 overflow-y-auto bg-white dark:bg-slate-900 custom-scrollbar">
                             <div className="mb-8">
-                                <span className="text-brand-primary font-black text-[10px] uppercase tracking-[0.3em] mb-3 block">Detalhes Exclusivos</span>
-                                <h2 className="text-3xl md:text-5xl font-black text-slate-900 dark:text-white mb-4 tracking-tighter leading-none">{selectedProperty.titulo}</h2>
-                                <p className="text-brand-primary font-black text-2xl md:text-3xl tracking-tighter">{selectedProperty.preco || 'Sob consulta'}</p>
+                                <span className="text-brand-primary font-black text-[9px] md:text-[10px] uppercase tracking-[0.3em] mb-2 block">Destaque Exclusivo</span>
+                                <h2 className="text-2xl md:text-5xl font-black text-slate-900 dark:text-white mb-3 md:mb-4 tracking-tighter leading-[1.1] md:leading-none uppercase">{selectedProperty.titulo}</h2>
+                                <p className="text-brand-primary font-black text-xl md:text-3xl tracking-tighter">{selectedProperty.preco || 'Sob consulta'}</p>
                             </div>
 
-                            <div className="flex gap-4 mb-8 overflow-x-auto pb-2 no-scrollbar">
-                                <div className="bg-slate-100 dark:bg-slate-800/50 p-4 rounded-3xl min-w-[100px] text-center">
-                                    <p className="text-[9px] font-black uppercase text-slate-400 mb-1">Área</p>
-                                    <p className="font-black text-slate-800 dark:text-white text-lg">{selectedProperty.area || '-'}</p>
+                            <div className="flex gap-3 md:gap-4 mb-8">
+                                <div className="flex-1 bg-slate-50 dark:bg-white/5 p-3 md:p-4 rounded-2xl md:rounded-3xl text-center border border-slate-100 dark:border-white/5">
+                                    <p className="text-[8px] md:text-[9px] font-black uppercase text-slate-400 mb-1">Área Total</p>
+                                    <p className="font-black text-slate-800 dark:text-white text-base md:text-lg">{selectedProperty.area || '-'}</p>
                                 </div>
-                                <div className="bg-slate-100 dark:bg-slate-800/50 p-4 rounded-3xl min-w-[100px] text-center">
-                                    <p className="text-[9px] font-black uppercase text-slate-400 mb-1">Quartos</p>
-                                    <p className="font-black text-slate-800 dark:text-white text-lg">{selectedProperty.quartos || '0'}</p>
+                                <div className="flex-1 bg-slate-50 dark:bg-white/5 p-3 md:p-4 rounded-2xl md:rounded-3xl text-center border border-slate-100 dark:border-white/5">
+                                    <p className="text-[8px] md:text-[9px] font-black uppercase text-slate-400 mb-1">Dormitórios</p>
+                                    <p className="font-black text-slate-800 dark:text-white text-base md:text-lg">{selectedProperty.quartos || '0'}</p>
                                 </div>
-                                <div className="bg-slate-100 dark:bg-slate-800/50 p-4 rounded-3xl min-w-[100px] text-center">
-                                    <p className="text-[9px] font-black uppercase text-slate-400 mb-1">Banheiros</p>
-                                    <p className="font-black text-slate-800 dark:text-white text-lg">{selectedProperty.banheiros || '0'}</p>
+                                <div className="flex-1 bg-slate-50 dark:bg-white/5 p-3 md:p-4 rounded-2xl md:rounded-3xl text-center border border-slate-100 dark:border-white/5">
+                                    <p className="text-[8px] md:text-[9px] font-black uppercase text-slate-400 mb-1">Suítes</p>
+                                    <p className="font-black text-slate-800 dark:text-white text-base md:text-lg">{selectedProperty.banheiros || '0'}</p>
                                 </div>
                             </div>
 
                             <div className="space-y-6 mb-12">
                                 <div className="flex items-start gap-4 text-slate-600 dark:text-slate-400">
-                                    <svg className="w-6 h-6 text-brand-primary mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                                    <div className="w-10 h-10 rounded-full bg-brand-primary/10 flex items-center justify-center shrink-0">
+                                        <svg className="w-5 h-5 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                                    </div>
                                     <div>
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Localização</p>
-                                        <p className="font-bold text-slate-800 dark:text-white">{selectedProperty.localizacao}</p>
+                                        <p className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-400 mb-0.5">Localização</p>
+                                        <p className="font-bold text-slate-800 dark:text-white text-sm md:text-base">{selectedProperty.localizacao}</p>
                                     </div>
                                 </div>
 
-                                <div className="prose dark:prose-invert max-w-none border-t border-slate-100 dark:border-white/5 pt-8">
-                                    <p className="text-slate-600 dark:text-slate-400 text-lg leading-relaxed">{selectedProperty.descricao}</p>
+                                <div className="prose prose-sm dark:prose-invert max-w-none border-t border-slate-100 dark:border-white/5 pt-6 md:pt-8">
+                                    <p className="text-slate-600 dark:text-slate-400 text-sm md:text-lg leading-relaxed font-medium">
+                                        {selectedProperty.descricao}
+                                    </p>
                                 </div>
                             </div>
 
-                            <div className="sticky bottom-0 bg-white dark:bg-slate-900 pt-6 border-t border-slate-100 dark:border-white/5">
+                            <div className="sticky bottom-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md pt-4 pb-2 border-t border-slate-100 dark:border-white/5">
                                 <button
                                     onClick={() => {
                                         setSelectedProperty(null);
                                         document.getElementById('lead-capture')?.scrollIntoView({ behavior: 'smooth' });
                                     }}
-                                    className="w-full bg-brand-primary text-white py-6 rounded-[2rem] font-black uppercase tracking-[0.2em] text-sm hover:bg-brand-dark transition-all shadow-2xl shadow-brand-primary/20 flex items-center justify-center gap-3 active:scale-95"
+                                    className="w-full bg-brand-primary text-brand-dark py-5 md:py-6 rounded-2xl md:rounded-[2rem] font-black uppercase tracking-[0.2em] text-xs md:text-sm hover:bg-brand-dark hover:text-white transition-all shadow-2xl shadow-brand-primary/20 flex items-center justify-center gap-3 active:scale-95"
                                 >
-                                    Falar com Especialista
+                                    Agendar Visita Exclusiva
                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
                                 </button>
                             </div>
