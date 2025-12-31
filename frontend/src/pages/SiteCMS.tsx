@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import AdminLayout from '../components/AdminLayout';
+import { supabase } from '../supabaseClient';
 
 interface SiteConfig {
     hero_title: string;
@@ -27,14 +28,10 @@ export default function SiteCMS() {
     const [saving, setSaving] = useState(false);
 
     useEffect(() => {
-        fetch('http://127.0.0.1:8000/api/public/config')
-            .then(res => res.json())
-            .then(data => {
-                setConfig(data);
-                setLoading(false);
-            })
-            .catch(err => {
-                console.error('Error fetching config:', err);
+        supabase.from('site_config').select('*').single()
+            .then(({ data, error }) => {
+                if (data) setConfig(data);
+                if (error) console.error('Error fetching config:', error);
                 setLoading(false);
             });
     }, []);
@@ -42,21 +39,17 @@ export default function SiteCMS() {
     const handleSave = async () => {
         setSaving(true);
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/admin/config', {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('crm_token')}`
-                },
-                body: JSON.stringify(config)
-            });
-            if (response.ok) {
-                alert('Configurações salvas com sucesso!');
-            } else {
-                alert('Erro ao salvar configurações.');
-            }
+            // We assume singleton config with ID 1
+            const { error } = await supabase
+                .from('site_config')
+                .update(config)
+                .eq('id', 1);
+
+            if (error) throw error;
+            alert('Configurações salvas com sucesso!');
         } catch (error) {
             console.error('Error saving config:', error);
+            alert('Erro ao salvar configurações.');
         } finally {
             setSaving(false);
         }

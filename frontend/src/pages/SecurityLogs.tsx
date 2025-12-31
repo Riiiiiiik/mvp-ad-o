@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import AdminLayout from '../components/AdminLayout';
+import { supabase } from '../supabaseClient';
 
 interface AuditLog {
     id: number;
@@ -16,14 +17,15 @@ export default function SecurityLogs() {
     const [loading, setLoading] = useState(true);
 
     const fetchLogs = async () => {
+        setLoading(true);
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/admin/audit-logs', {
-                headers: { 'Authorization': `Bearer ${localStorage.getItem('crm_token')}` }
-            });
-            if (response.ok) {
-                const data = await response.json();
-                setLogs(data);
-            }
+            const { data, error } = await supabase
+                .from('audit_logs')
+                .select('*')
+                .order('timestamp', { ascending: false });
+
+            if (error) throw error;
+            setLogs(data || []);
         } catch (error) {
             console.error('Error fetching logs:', error);
         } finally {

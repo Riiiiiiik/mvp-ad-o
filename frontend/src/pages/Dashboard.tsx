@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import AdminLayout from '../components/AdminLayout';
+import { supabase } from '../supabaseClient';
 
 interface Lead {
     id: number;
@@ -9,12 +10,12 @@ interface Lead {
     origem?: string;
     status: string;
     anotacoes?: string;
-    usuario_id?: number | null;
+    usuario_id?: string | null; // UUID
     created_at: string;
 }
 
 interface User {
-    id: number;
+    id: string; // UUID in Supabase
     email: string;
     role: string;
 }
@@ -43,61 +44,68 @@ export default function Dashboard() {
     const [users, setUsers] = useState<User[]>([]);
     const [isAdmin, setIsAdmin] = useState(false);
 
-    const getUserInfo = () => {
-        const token = localStorage.getItem('crm_token');
-        if (!token) return null;
-        try {
-            const base64Url = token.split('.')[1];
-            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
-                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-            }).join(''));
-            return JSON.parse(jsonPayload);
-        } catch (e) {
-            return null;
-        }
-    };
-
     const fetchData = async () => {
-        const token = localStorage.getItem('crm_token');
-        if (!token) {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
             window.location.hash = '#/login';
             return;
         }
 
         try {
-            const [leadsRes, statsRes] = await Promise.all([
-                fetch('http://127.0.0.1:8000/api/leads', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                }),
-                fetch('http://127.0.0.1:8000/api/stats', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                })
-            ]);
+            // Fetch Leads
+            const { data: leadsData } = await supabase
+                .from('leads')
+                .select('*')
+                .order('created_at', { ascending: false });
 
-            if (leadsRes.status === 401 || statsRes.status === 401) {
-                localStorage.removeItem('crm_token');
-                window.location.hash = '#/login';
-                return;
+            setLeads(leadsData || []);
+
+            // Stats Calculations
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const lastWeek = new Date();
+            lastWeek.setDate(lastWeek.getDate() - 7);
+
+            const { count: leadsToday } = await supabase
+                .from('leads')
+                .select('*', { count: 'exact', head: true })
+                .gte('created_at', today.toISOString());
+
+            const { count: leadsWeek } = await supabase
+                .from('leads')
+                .select('*', { count: 'exact', head: true })
+                .gte('created_at', lastWeek.toISOString());
+
+            const { count: activeProps } = await supabase
+                .from('properties')
+                .select('*', { count: 'exact', head: true })
+                .eq('status', 'ATIVO');
+
+            // Check Admin Role
+            const { data: userProfile } = await supabase
+                .from('usuarios')
+                .select('role')
+                .eq('id', session.user.id)
+                .single();
+
+            const role = userProfile?.role || 'vendedor';
+            setIsAdmin(role === 'admin');
+
+            if (role === 'admin') {
+                const { data: usersData } = await supabase
+                    .from('usuarios')
+                    .select('id, email, role');
+                setUsers(usersData || []);
             }
 
-            const leadsData = await leadsRes.json();
-            const statsData = await statsRes.json();
+            setStats({
+                leads_today: leadsToday || 0,
+                leads_week: leadsWeek || 0,
+                active_properties: activeProps || 0,
+                total_views: 0 // Placeholder for now
+            });
 
-            setLeads(leadsData);
-            setStats(statsData);
-
-            const userInfo = getUserInfo();
-            if (userInfo?.role === 'admin') {
-                setIsAdmin(true);
-                const usersRes = await fetch('http://127.0.0.1:8000/api/admin/users', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                if (usersRes.ok) {
-                    const usersData = await usersRes.json();
-                    setUsers(usersData);
-                }
-            }
         } catch (error) {
             console.error('Error fetching data:', error);
         } finally {
@@ -107,41 +115,45 @@ export default function Dashboard() {
 
     useEffect(() => {
         fetchData();
+
+        // Real-time subscription for leads
+        const channel = supabase
+            .channel('leads_dashboard')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'leads' }, () => {
+                fetchData();
+            })
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
     }, []);
 
     const updateStatus = async (id: number, newStatus: string) => {
-        const token = localStorage.getItem('crm_token');
         try {
-            await fetch(`http://127.0.0.1:8000/api/leads/${id}`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ status: newStatus }),
-            });
+            const { error } = await supabase
+                .from('leads')
+                .update({ status: newStatus })
+                .eq('id', id);
+
+            if (error) throw error;
 
             setLeads(leads.map(lead => lead.id === id ? { ...lead, status: newStatus } : lead));
-            // Reload stats to update counts if necessary
-            fetch('http://127.0.0.1:8000/api/stats', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            }).then(res => res.json()).then(data => setStats(data));
+            // Stats will auto-update via subscription or simple re-fetch if needed
         } catch (error) {
             console.error('Error updating status:', error);
         }
     };
 
-    const assignLead = async (id: number, userId: number | null) => {
-        const token = localStorage.getItem('crm_token');
+    const assignLead = async (id: number, userId: string | null) => {
         try {
-            await fetch(`http://127.0.0.1:8000/api/leads/${id}`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ usuario_id: userId }),
-            });
+            const { error } = await supabase
+                .from('leads')
+                .update({ usuario_id: userId })
+                .eq('id', id);
+
+            if (error) throw error;
+
             setLeads(leads.map(lead => lead.id === id ? { ...lead, usuario_id: userId } : lead));
         } catch (error) {
             console.error('Error assigning lead:', error);
@@ -260,7 +272,7 @@ export default function Dashboard() {
                                                     {isAdmin && (
                                                         <select
                                                             value={lead.usuario_id || ''}
-                                                            onChange={(e) => assignLead(lead.id, e.target.value ? parseInt(e.target.value) : null)}
+                                                            onChange={(e) => assignLead(lead.id, e.target.value || null)}
                                                             className="bg-slate-800 text-[9px] text-slate-400 border border-slate-700 rounded px-1 py-0.5 focus:outline-none"
                                                         >
                                                             <option value="">Não atribuído</option>

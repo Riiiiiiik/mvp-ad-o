@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { supabase } from '../supabaseClient';
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
@@ -11,30 +12,18 @@ export default function LoginPage() {
         setLoading(true);
         setError('');
 
-        const formData = new FormData();
-        formData.append('username', email);
-        formData.append('password', password);
-
         try {
-            // Using 127.0.0.1 instead of localhost can avoid IPv6 lookup delays on Windows
-            const response = await fetch('http://127.0.0.1:8000/api/auth/login', {
-                method: 'POST',
-                body: formData,
+            const { error } = await supabase.auth.signInWithPassword({
+                email,
+                password,
             });
 
-            if (!response.ok) {
-                const data = await response.json();
-                throw new Error(data.detail || 'Falha no login');
-            }
+            if (error) throw error;
 
-            const { access_token } = await response.json();
-            localStorage.setItem('crm_token', access_token);
-
-            // Clean redirect to dashboard
+            // Supabase client manages session state automatically
             window.location.hash = '#/admin';
-            window.location.reload();
         } catch (err: any) {
-            setError(err.message);
+            setError(err.message || 'Falha no login');
         } finally {
             setLoading(false);
         }

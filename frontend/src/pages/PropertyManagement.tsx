@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import AdminLayout from '../components/AdminLayout';
+import { supabase } from '../supabaseClient';
 
 interface PropertyImage {
     id?: number;
@@ -65,12 +66,22 @@ export default function PropertyManagement() {
     const fetchProperties = useCallback(async () => {
         setLoading(true);
         try {
-            const url = searchTerm
-                ? `http://127.0.0.1:8000/api/properties?search=${encodeURIComponent(searchTerm)}`
-                : 'http://127.0.0.1:8000/api/properties';
-            const response = await fetch(url);
-            const data = await response.json();
-            setProperties(data);
+            let query = supabase
+                .from('properties')
+                .select(`
+                    *,
+                    images:property_images(*)
+                `)
+                .order('created_at', { ascending: false });
+
+            if (searchTerm) {
+                query = query.or(`titulo.ilike.%${searchTerm}%,localizacao.ilike.%${searchTerm}%`);
+            }
+
+            const { data, error } = await query;
+
+            if (error) throw error;
+            setProperties(data || []);
         } catch (error) {
             console.error('Error fetching properties:', error);
         } finally {
@@ -205,37 +216,51 @@ export default function PropertyManagement() {
 
     const handleAddProperty = async (e: React.FormEvent) => {
         e.preventDefault();
-        const token = localStorage.getItem('crm_token');
 
-        // Convert string number fields to actual numbers
-        const propertyToSave = {
-            ...newProp,
+        // Prepare Property Data
+        const { images, cep, ...rest } = newProp;
+
+        const propertyToInsert = {
+            ...rest,
             quartos: parseInt(newProp.quartos as any) || 0,
             banheiros: parseInt(newProp.banheiros as any) || 0,
             vagas: parseInt(newProp.vagas as any) || 0,
         };
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/properties', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(propertyToSave),
-            });
+            const { data: prop, error: propError } = await supabase
+                .from('properties')
+                .insert([propertyToInsert])
+                .select()
+                .single();
 
-            if (response.ok) {
-                setShowAddModal(false);
-                setNewProp({
-                    titulo: '', descricao: '', preco: '', condominio: '', iptu: '',
-                    localizacao: '', tipo: 'Casa', quartos: '' as any, banheiros: '' as any, vagas: '' as any,
-                    area: '', status: 'ATIVO', video_url: '', main_image_url: '',
-                    thumb_image_url: '', is_destaque: 0, cep: '', images: []
-                });
-                setCep('');
-                fetchProperties();
+            if (propError) throw propError;
+
+            if (images.length > 0 && prop) {
+                const imagesToInsert = images.map(img => ({
+                    property_id: prop.id,
+                    image_url: img.image_url,
+                    thumb_url: img.thumb_url,
+                    ordem: img.ordem
+                }));
+
+                const { error: imgError } = await supabase
+                    .from('property_images')
+                    .insert(imagesToInsert);
+
+                if (imgError) throw imgError;
             }
+
+            setShowAddModal(false);
+            setNewProp({
+                titulo: '', descricao: '', preco: '', condominio: '', iptu: '',
+                localizacao: '', tipo: 'Casa', quartos: '' as any, banheiros: '' as any, vagas: '' as any,
+                area: '', status: 'ATIVO', video_url: '', main_image_url: '',
+                thumb_image_url: '', is_destaque: 0, cep: '', images: []
+            });
+            setCep('');
+            fetchProperties();
+
         } catch (error) {
             console.error('Error adding property:', error);
         }

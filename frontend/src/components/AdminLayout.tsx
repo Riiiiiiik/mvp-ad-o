@@ -1,4 +1,5 @@
-import type { ReactNode } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
+import { supabase } from '../supabaseClient';
 
 interface AdminLayoutProps {
     children: ReactNode;
@@ -6,28 +7,56 @@ interface AdminLayoutProps {
 }
 
 export default function AdminLayout({ children, activePath }: AdminLayoutProps) {
-    const handleLogout = () => {
-        localStorage.removeItem('crm_token');
+    const [userRole, setUserRole] = useState<string | null>(null);
+    const [userEmail, setUserEmail] = useState<string | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const checkSession = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                window.location.hash = '#/login';
+                return;
+            }
+
+            setUserEmail(session.user.email || 'Usuário');
+
+            // Fetch role from public table
+            const { data: userProfile } = await supabase
+                .from('usuarios')
+                .select('role')
+                .eq('id', session.user.id)
+                .single();
+
+            setUserRole(userProfile?.role || 'vendedor');
+            setLoading(false);
+        };
+
+        checkSession();
+
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            if (!session) {
+                window.location.hash = '#/login';
+            }
+        });
+
+        return () => subscription.unsubscribe();
+    }, []);
+
+    const handleLogout = async () => {
+        await supabase.auth.signOut();
         window.location.hash = '#/login';
     };
 
-    const getUserInfo = () => {
-        const token = localStorage.getItem('crm_token');
-        if (!token) return null;
-        try {
-            const base64Url = token.split('.')[1];
-            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
-                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-            }).join(''));
-            return JSON.parse(jsonPayload);
-        } catch (e) {
-            return null;
-        }
-    };
+    const isAdmin = userRole === 'admin';
 
-    const userInfo = getUserInfo();
-    const isAdmin = userInfo?.role === 'admin';
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-slate-950 flex items-center justify-center text-slate-500 font-bold uppercase tracking-widest text-xs">
+                Carregando Acesso...
+            </div>
+        );
+    }
 
     const menuItems = [
         {
@@ -125,7 +154,7 @@ export default function AdminLayout({ children, activePath }: AdminLayoutProps) 
                 <div className="p-4 border-t border-slate-900">
                     <div className="bg-slate-900/50 rounded-2xl p-4 border border-slate-800/50">
                         <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1">Logado como</p>
-                        <p className="text-xs font-bold text-white truncate">{userInfo?.sub || 'Usuário'}</p>
+                        <p className="text-xs font-bold text-white truncate">{userEmail}</p>
                     </div>
                 </div>
             </aside>

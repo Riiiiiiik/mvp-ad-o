@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { PROPERTY_CATEGORIES } from '../constants/properties';
+import { supabase } from '../supabaseClient';
 
 interface PropertyImage {
     id: number;
@@ -162,36 +163,46 @@ export default function LandingPage() {
     };
 
     useEffect(() => {
-        fetch('http://127.0.0.1:8000/api/public/config')
-            .then(res => res.json())
-            .then(data => setConfig(data))
-            .catch(err => console.error('Error fetching site config:', err));
+        supabase.from('site_config').select('*').single()
+            .then(({ data, error }) => {
+                if (data) setConfig(data);
+                if (error) console.error('Error fetching site config:', error);
+            });
     }, []);
 
     useEffect(() => {
-        fetch('http://127.0.0.1:8000/api/properties')
-            .then(res => res.json())
-            .then(data => setProperties(data))
-            .catch(err => console.error('Error fetching properties:', err));
+        supabase.from('properties')
+            .select('*, images:property_images(*)')
+            .order('created_at', { ascending: false })
+            .then(({ data, error }) => {
+                if (data) setProperties(data || []);
+                if (error) console.error('Error fetching properties:', error);
+            });
     }, []);
 
-    const handleSearch = (typeOverride?: string) => {
-        const query = searchTerm ? `?search=${encodeURIComponent(searchTerm)}` : '';
+    const handleSearch = async (typeOverride?: string) => {
+        let query = supabase.from('properties').select('*, images:property_images(*)');
+
+        if (searchTerm) {
+            query = query.or(`titulo.ilike.%${searchTerm}%,localizacao.ilike.%${searchTerm}%`);
+        }
+
+        const { data, error } = await query;
+
+        if (error) {
+            console.error('Error searching properties:', error);
+            return;
+        }
+
+        let filtered = data || [];
         const currentType = typeOverride !== undefined ? typeOverride : selectedType;
 
-        fetch(`http://127.0.0.1:8000/api/public/config`).then(() => { // Dummy chained valid prompt if needed, but actually just fetch properties
-            fetch(`http://127.0.0.1:8000/api/properties${query}`)
-                .then(res => res.json())
-                .then(data => {
-                    let filtered = data;
-                    if (currentType !== 'Tipo de imóvel') {
-                        filtered = data.filter((p: Property) => p.tipo === currentType);
-                    }
-                    setProperties(filtered);
-                    document.getElementById('imoveis')?.scrollIntoView({ behavior: 'smooth' });
-                })
-                .catch(err => console.error('Error searching properties:', err));
-        });
+        if (currentType !== 'Tipo de imóvel') {
+            filtered = filtered.filter((p: Property) => p.tipo === currentType);
+        }
+
+        setProperties(filtered);
+        document.getElementById('imoveis')?.scrollIntoView({ behavior: 'smooth' });
     };
 
 
@@ -205,17 +216,14 @@ export default function LandingPage() {
 
         setStatus('loading');
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/leads', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    nome: leadName,
-                    whatsapp: leadWhatsapp,
-                    origem: 'Landing Page v2'
-                }),
-            });
+            const { error } = await supabase.from('leads').insert([{
+                nome: leadName,
+                whatsapp: leadWhatsapp,
+                origem: 'Landing Page v2'
+            }]);
 
-            if (!response.ok) throw new Error('Failed to submit');
+            if (error) throw error;
+
             setStatus('success');
             setLeadName('');
             setLeadWhatsapp('');

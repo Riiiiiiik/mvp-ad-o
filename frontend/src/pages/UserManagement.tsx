@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
+import { createClient } from '@supabase/supabase-js';
 import AdminLayout from '../components/AdminLayout';
+import { supabase } from '../supabaseClient';
 
 interface User {
-    id: number;
+    id: string; // UUID
     email: string;
     role: string;
 }
@@ -19,14 +21,15 @@ export default function UserManagement() {
     const [saving, setSaving] = useState(false);
 
     const fetchUsers = async () => {
+        setLoading(true);
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/admin/users', {
-                headers: { 'Authorization': `Bearer ${localStorage.getItem('crm_token')}` }
-            });
-            if (response.ok) {
-                const data = await response.json();
-                setUsers(data);
-            }
+            const { data, error } = await supabase
+                .from('usuarios')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+            setUsers(data || []);
         } catch (error) {
             console.error('Error fetching users:', error);
         } finally {
@@ -42,27 +45,39 @@ export default function UserManagement() {
         e.preventDefault();
         setSaving(true);
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/admin/users', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('crm_token')}`
-                },
-                body: JSON.stringify({ email, password, role })
+            // Create a temporary client to avoid replacing the current admin session
+            const tempSupabase = createClient(
+                import.meta.env.VITE_SUPABASE_URL,
+                import.meta.env.VITE_SUPABASE_ANON_KEY,
+                { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } }
+            );
+
+            const { data: signUpData, error: signUpError } = await tempSupabase.auth.signUp({
+                email,
+                password,
             });
 
-            if (response.ok) {
+            if (signUpError) throw signUpError;
+
+            if (signUpData.user) {
+                // Update Role (The trigger likely created the user with default 'vendedor' role)
+                // We use the main client (Admin) to update the role
+                const { error: updateError } = await supabase
+                    .from('usuarios')
+                    .update({ role })
+                    .eq('id', signUpData.user.id);
+
+                if (updateError) console.error('Error updating role:', updateError);
+
                 alert('Usuário criado com sucesso!');
                 setShowModal(false);
                 setEmail('');
                 setPassword('');
                 fetchUsers();
-            } else {
-                const data = await response.json();
-                alert(data.detail || 'Erro ao criar usuário');
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error creating user:', error);
+            alert(error.message || 'Erro ao criar usuário');
         } finally {
             setSaving(false);
         }

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import AdminLayout from '../components/AdminLayout';
+import { supabase } from '../supabaseClient';
 
 interface ChartData {
     date: string;
@@ -24,28 +25,67 @@ export default function AnalyticsPage() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        console.log('Fetching analytics data...');
-        fetch('http://127.0.0.1:8000/api/analytics/stats', {
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('crm_token')}`
-            }
-        })
-            .then(async res => {
-                if (!res.ok) {
-                    const errorData = await res.json().catch(() => ({}));
-                    throw new Error(errorData.detail || `HTTP error! status: ${res.status}`);
+        const loadStats = async () => {
+            try {
+                // 1. Total Leads
+                const { count: leadsCount } = await supabase.from('leads').select('*', { count: 'exact', head: true });
+
+                // 2. Properties Stats (Total Views & Top Props)
+                const { data: props } = await supabase
+                    .from('properties')
+                    .select('titulo, views_count')
+                    .order('views_count', { ascending: false });
+
+                const totalViews = props?.reduce((acc, p) => acc + (p.views_count || 0), 0) || 0;
+                const topProps = props?.slice(0, 5).map(p => ({ titulo: p.titulo, views: p.views_count })) || [];
+
+                // 3. Chart Data (Last 7 days from property_analytics)
+                const today = new Date();
+                const sevenDaysAgo = new Date();
+                sevenDaysAgo.setDate(today.getDate() - 6); // 7 days inclusive
+
+                const { data: analytics } = await supabase
+                    .from('property_analytics')
+                    .select('access_time')
+                    .gte('access_time', sevenDaysAgo.toISOString());
+
+                // Aggregate by day
+                const viewsByDay: Record<string, number> = {};
+                // Initialize last 7 days with 0
+                for (let i = 0; i < 7; i++) {
+                    const d = new Date();
+                    d.setDate(today.getDate() - i);
+                    const dateKey = d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+                    viewsByDay[dateKey] = 0;
                 }
-                return res.json();
-            })
-            .then(data => {
-                console.log('Analytics data received:', data);
-                setStats(data);
-                setLoading(false);
-            })
-            .catch(err => {
+
+                analytics?.forEach(a => {
+                    const dateKey = new Date(a.access_time).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+                    if (viewsByDay[dateKey] !== undefined) viewsByDay[dateKey]++;
+                });
+
+                const chartData = Object.entries(viewsByDay)
+                    .map(([date, views]) => ({ date, views }))
+                    .reverse();
+
+                // Conversion
+                const conversion = totalViews > 0 ? ((leadsCount || 0) / totalViews) * 100 : 0;
+
+                setStats({
+                    views_chart: chartData,
+                    top_properties: topProps,
+                    conversion_rate: parseFloat(conversion.toFixed(2)),
+                    total_leads: leadsCount || 0,
+                    total_views: totalViews
+                });
+            } catch (err) {
                 console.error('Error fetching analytics:', err);
+            } finally {
                 setLoading(false);
-            });
+            }
+        };
+
+        loadStats();
     }, []);
 
     // Secure calculation of maxViews
