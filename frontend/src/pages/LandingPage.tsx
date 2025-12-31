@@ -164,6 +164,7 @@ export default function LandingPage() {
         const digits = value.replace(/\D/g, '');
         if (digits.length <= 2) return digits;
         if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+        // Format as (00) 00000-0000 (11 digits)
         return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}`;
     };
 
@@ -175,6 +176,8 @@ export default function LandingPage() {
     const handleLeadSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const digits = leadWhatsapp.replace(/\D/g, '');
+        console.log('Lead submission attempt:', { nome: leadName, whatsapp: leadWhatsapp, digits_length: digits.length });
+
         if (digits.length < 10) {
             alert('Por favor, insira um WhatsApp válido com DDD.');
             return;
@@ -182,19 +185,24 @@ export default function LandingPage() {
 
         setStatus('loading');
         try {
-            const { error } = await supabase.from('leads').insert([{
+            console.log('Sending to Supabase...');
+            const { data, error } = await supabase.from('leads').insert([{
                 nome: leadName,
                 whatsapp: leadWhatsapp,
                 origem: 'Landing Page v2'
-            }]);
+            }]).select();
 
-            if (error) throw error;
+            if (error) {
+                console.error('Supabase Error:', error);
+                throw error;
+            }
 
+            console.log('Supabase Success:', data);
             setStatus('success');
             setLeadName('');
             setLeadWhatsapp('');
         } catch (error) {
-            console.error(error);
+            console.error('Submission Catch Error:', error);
             setStatus('error');
         }
     };
@@ -536,7 +544,7 @@ export default function LandingPage() {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 ml-1">WhatsApp com DDD</label>
+                                    <label className="block text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 ml-1">WhatsApp de Contato</label>
                                     <input
                                         required
                                         type="tel"
@@ -562,10 +570,10 @@ export default function LandingPage() {
                                             </svg>
                                             Enviando...
                                         </>
-                                    ) : 'Receber Consultoria Gratuita'}
+                                    ) : 'PEDIR CONSULTORIA GRÁTIS'}
                                 </button>
                                 <p className="text-center text-[8px] md:text-[9px] text-slate-400 font-bold uppercase tracking-[0.2em] mt-2">
-                                    Atendimento humanizado em tempo real
+                                    ATENDIMENTO 24H EM TEMPO REAL
                                 </p>
                             </form>
                         )}
