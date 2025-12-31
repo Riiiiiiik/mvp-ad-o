@@ -20,11 +20,14 @@ export default function LoginPage() {
 
             if (error) throw error;
 
-            // Supabase client manages session state automatically
-            window.location.hash = '#/admin';
+            // Sucesso
+            // Adicionar um pequeno delay ou feedback visual se necessário, 
+            // mas o mais importante é garantir a navegação
+            window.location.replace('/#/admin');
+
         } catch (err: any) {
+            console.error("Login error:", err);
             setError(err.message || 'Falha no login');
-        } finally {
             setLoading(false);
         }
     };
