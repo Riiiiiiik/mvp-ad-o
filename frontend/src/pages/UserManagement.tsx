@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import AdminLayout from '../components/AdminLayout';
-import { supabase } from '../supabaseClient';
+import { supabase, supabaseUrl, supabaseAnonKey } from '../supabaseClient';
 
 interface User {
     id: string; // UUID
@@ -47,8 +47,8 @@ export default function UserManagement() {
         try {
             // Create a temporary client to avoid replacing the current admin session
             const tempSupabase = createClient(
-                import.meta.env.VITE_SUPABASE_URL,
-                import.meta.env.VITE_SUPABASE_ANON_KEY,
+                supabaseUrl,
+                supabaseAnonKey,
                 { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } }
             );
 

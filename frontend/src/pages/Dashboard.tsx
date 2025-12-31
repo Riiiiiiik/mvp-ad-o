@@ -46,10 +46,7 @@ export default function Dashboard() {
 
     const fetchData = async () => {
         const { data: { session } } = await supabase.auth.getSession();
-        if (!session) {
-            window.location.hash = '#/login';
-            return;
-        }
+        if (!session) return;
 
         try {
             // Fetch Leads
@@ -99,11 +96,16 @@ export default function Dashboard() {
                 setUsers(usersData || []);
             }
 
+            const { data: propsViews } = await supabase
+                .from('properties')
+                .select('views_count');
+            const totalViews = propsViews?.reduce((acc, p) => acc + (p.views_count || 0), 0) || 0;
+
             setStats({
                 leads_today: leadsToday || 0,
                 leads_week: leadsWeek || 0,
                 active_properties: activeProps || 0,
-                total_views: 0 // Placeholder for now
+                total_views: totalViews
             });
 
         } catch (error) {

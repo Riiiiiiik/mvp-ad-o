@@ -1,40 +1,12 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import AdminLayout from '../components/AdminLayout';
 import { supabase } from '../supabaseClient';
+import type { PropertyImage } from '../types/property';
+import { useProperties } from '../hooks/useProperties';
 
-interface PropertyImage {
-    id?: number;
-    image_url: string;
-    thumb_url?: string;
-    ordem?: number;
-}
-
-interface Property {
-    id: number;
-    titulo: string;
-    descricao?: string;
-    preco?: string;
-    condominio?: string;
-    iptu?: string;
-    localizacao?: string;
-    tipo?: string;
-    quartos?: number;
-    banheiros?: number;
-    vagas?: number;
-    area?: string;
-    status: string;
-    video_url?: string;
-    main_image_url?: string;
-    thumb_image_url?: string;
-    is_destaque: number;
-    views_count: number;
-    images?: PropertyImage[];
-    created_at: string;
-}
 
 export default function PropertyManagement() {
-    const [properties, setProperties] = useState<Property[]>([]);
-    const [loading, setLoading] = useState(true);
+    const { properties, loading, fetchProperties } = useProperties();
     const [showAddModal, setShowAddModal] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [isProcessingImage, setIsProcessingImage] = useState(false);
@@ -50,9 +22,9 @@ export default function PropertyManagement() {
         iptu: '',
         localizacao: '',
         tipo: 'Casa',
-        quartos: '' as any,
-        banheiros: '' as any,
-        vagas: '' as any,
+        quartos: 0,
+        banheiros: 0,
+        vagas: 0,
         area: '',
         status: 'ATIVO',
         video_url: '',
@@ -63,38 +35,12 @@ export default function PropertyManagement() {
         images: [] as PropertyImage[]
     });
 
-    const fetchProperties = useCallback(async () => {
-        setLoading(true);
-        try {
-            let query = supabase
-                .from('properties')
-                .select(`
-                    *,
-                    images:property_images(*)
-                `)
-                .order('created_at', { ascending: false });
-
-            if (searchTerm) {
-                query = query.or(`titulo.ilike.%${searchTerm}%,localizacao.ilike.%${searchTerm}%`);
-            }
-
-            const { data, error } = await query;
-
-            if (error) throw error;
-            setProperties(data || []);
-        } catch (error) {
-            console.error('Error fetching properties:', error);
-        } finally {
-            setLoading(false);
-        }
-    }, [searchTerm]);
-
     useEffect(() => {
         const timer = setTimeout(() => {
-            fetchProperties();
+            fetchProperties({ searchTerm });
         }, 300);
         return () => clearTimeout(timer);
-    }, [fetchProperties]);
+    }, [searchTerm, fetchProperties]);
 
     const convertToWebP = (file: File, maxWidth: number, quality: number): Promise<string> => {
         return new Promise((resolve, reject) => {

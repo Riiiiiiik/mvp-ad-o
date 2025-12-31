@@ -3,34 +3,9 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { PROPERTY_CATEGORIES } from '../constants/properties';
 import { supabase } from '../supabaseClient';
+import type { Property } from '../types/property';
+import { useProperties } from '../hooks/useProperties';
 
-interface PropertyImage {
-    id: number;
-    image_url: string;
-    thumb_url?: string;
-    ordem?: number;
-}
-
-interface Property {
-    id: number;
-    titulo: string;
-    descricao?: string;
-    preco?: string;
-    localizacao?: string;
-    tipo?: string;
-    quartos?: number;
-    banheiros?: number;
-    vagas?: number;
-    area?: string;
-    status: string;
-    main_image_url?: string;
-    thumb_image_url?: string;
-    is_destaque: number;
-    condominio?: string;
-    iptu?: string;
-    video_url?: string;
-    images?: PropertyImage[];
-}
 
 interface SiteConfig {
     hero_title: string;
@@ -53,19 +28,19 @@ const ALLOTMENTS_DATA = [
         name: 'Aliança',
         history: 'O loteamento Aliança é o símbolo da união entre a modernidade e as raízes do interior goiano. Localizado em um ponto estratégico de expansão, o projeto foi desenhado para quem busca fortalecer laços familiares em um bairro seguro e planejado. Com ruas amplas e áreas verdes integradas, o Aliança é mais que um loteamento; é o pacto de qualidade de vida que você faz com o seu futuro em Goiás.',
         videoUrl: '',
-        imageUrl: 'C:/Users/Rik/.gemini/antigravity/brain/eb6bf96d-0f0e-417b-bef6-da820855a4bf/luxury_allotment_aerial_view_1767185824851.png'
+        imageUrl: 'https://images.unsplash.com/photo-1590483734724-383b853b317d?auto=format&fit=crop&w=1200'
     },
     {
         name: 'Residencial Eldorado',
         history: 'Como o primeiro bairro planejado verticalmente de Goiânia, o Residencial Eldorado é um ícone de inovação urbana. Localizado no coração da região sudoeste, o bairro oferece uma vida dinâmica em torno da Avenida Milão, onde o lazer e a conveniência se unem em um ambiente moderno e valorizado. Ideal para famílias que buscam infraestrutura completa e qualidade de vida superior.',
         videoUrl: '',
-        imageUrl: 'C:/Users/Rik/.gemini/antigravity/brain/eb6bf96d-0f0e-417b-bef6-da820855a4bf/luxury_allotment_leisure_area_1767185840623.png'
+        imageUrl: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200'
     },
     {
         name: 'Serra Verde III',
         history: 'O Serra Verde III representa o ápice da exclusividade em harmonia com a natureza. Situado em uma região de topografia privilegiada, o empreendimento oferece uma vista panorâmica permanente e o ar puro que só as áreas preservadas proporcionam. É a terceira e mais refinada etapa de um legado de sucesso, consolidando-se como o refúgio perfeito para famílias que buscam tranquilidade sem abrir mão da sofisticação.',
         videoUrl: '',
-        imageUrl: 'C:/Users/Rik/.gemini/antigravity/brain/eb6bf96d-0f0e-417b-bef6-da820855a4bf/luxury_allotment_aerial_view_1767185824851.png'
+        imageUrl: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1200'
     },
     {
         name: 'Jardim Mariana II',
@@ -77,19 +52,19 @@ const ALLOTMENTS_DATA = [
         name: 'Vale dos Sonhos',
         history: 'O Residencial Vale dos Sonhos, localizado na promissora região de Goianésia, Goiás, é o destino perfeito para quem busca a paz da vida rural com a vantagem de um investimento sólido. Próximo à BR-060/153, o loteamento oferece condições facilitadas para transformar o sonho da moradia tranquila em realidade, unindo segurança, acessibilidade e o contato direto com a natureza.',
         videoUrl: '',
-        imageUrl: 'C:/Users/Rik/.gemini/antigravity/brain/eb6bf96d-0f0e-417b-bef6-da820855a4bf/luxury_allotment_leisure_area_1767185840623.png'
+        imageUrl: 'https://images.unsplash.com/photo-1500076656116-558758c991c1?auto=format&fit=crop&w=1200'
     },
     {
         name: 'Residencial América',
         history: 'O Jardim América em Porangatu é a definição de um bairro planejado para o futuro. Com infraestrutura completa e iluminação em LED, o loteamento se destaca pelo lazer excepcional, incluindo lago privativo, pista de caminhada e quadras esportivas. Estrategicamente localizado próximo à BR-153, é a escolha ideal para quem busca modernidade, segurança e uma valorização garantida na região Sul da cidade.',
         videoUrl: '',
-        imageUrl: 'C:/Users/Rik/.gemini/antigravity/brain/eb6bf96d-0f0e-417b-bef6-da820855a4bf/luxury_allotment_aerial_view_1767185824851.png'
+        imageUrl: 'https://images.unsplash.com/photo-1448630360428-65456885c650?auto=format&fit=crop&w=1200'
     },
     {
         name: 'Jardim Primavera',
         history: 'Com mais de três décadas de história na região Noroeste de Goiânia, o Jardim Primavera nasceu da transformação da antiga Fazenda São Domingos. De origens agrícolas para um vibrante espaço urbano, o bairro simboliza a expansão e o amadurecimento da capital. Consolidado e repleto de tradição, o loteamento é uma escolha segura para quem valoriza raízes fortes e o desenvolvimento constante de uma comunidade acolhedora.',
         videoUrl: '',
-        imageUrl: 'C:/Users/Rik/.gemini/antigravity/brain/eb6bf96d-0f0e-417b-bef6-da820855a4bf/luxury_allotment_leisure_area_1767185840623.png'
+        imageUrl: 'https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&w=1200&q=80'
     }
 ];
 
@@ -108,7 +83,7 @@ export default function LandingPage() {
     const [leadName, setLeadName] = useState('');
     const [leadWhatsapp, setLeadWhatsapp] = useState('');
     const [selectedAllotment, setSelectedAllotment] = useState<typeof ALLOTMENTS_DATA[0] | null>(null);
-    const [properties, setProperties] = useState<Property[]>([]);
+    const { properties, fetchProperties } = useProperties();
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedType, setSelectedType] = useState('Tipo de imóvel');
     const [config, setConfig] = useState<SiteConfig | null>(null);
@@ -171,37 +146,16 @@ export default function LandingPage() {
     }, []);
 
     useEffect(() => {
-        supabase.from('properties')
-            .select('*, images:property_images(*)')
-            .order('created_at', { ascending: false })
-            .then(({ data, error }) => {
-                if (data) setProperties(data || []);
-                if (error) console.error('Error fetching properties:', error);
-            });
-    }, []);
+        fetchProperties({ status: 'ATIVO' });
+    }, [fetchProperties]);
 
     const handleSearch = async (typeOverride?: string) => {
-        let query = supabase.from('properties').select('*, images:property_images(*)');
-
-        if (searchTerm) {
-            query = query.or(`titulo.ilike.%${searchTerm}%,localizacao.ilike.%${searchTerm}%`);
-        }
-
-        const { data, error } = await query;
-
-        if (error) {
-            console.error('Error searching properties:', error);
-            return;
-        }
-
-        let filtered = data || [];
         const currentType = typeOverride !== undefined ? typeOverride : selectedType;
-
-        if (currentType !== 'Tipo de imóvel') {
-            filtered = filtered.filter((p: Property) => p.tipo === currentType);
-        }
-
-        setProperties(filtered);
+        await fetchProperties({
+            searchTerm,
+            type: currentType,
+            status: 'ATIVO'
+        });
         document.getElementById('imoveis')?.scrollIntoView({ behavior: 'smooth' });
     };
 
