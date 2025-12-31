@@ -27,12 +27,7 @@ function App() {
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
-  // Simple Route Guard for CRM
-  useEffect(() => {
-    if (path.startsWith('#/admin') && !localStorage.getItem('crm_token')) {
-      window.location.hash = '#/login';
-    }
-  }, [path]);
+
 
   const renderPage = () => {
     switch (path) {
