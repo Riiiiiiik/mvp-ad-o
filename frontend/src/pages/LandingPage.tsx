@@ -160,6 +160,18 @@ export default function LandingPage() {
     };
 
 
+    const formatPhoneNumber = (value: string) => {
+        const digits = value.replace(/\D/g, '');
+        if (digits.length <= 2) return digits;
+        if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+        return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}`;
+    };
+
+    const handleWhatsappChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const formatted = formatPhoneNumber(e.target.value);
+        setLeadWhatsapp(formatted);
+    };
+
     const handleLeadSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const digits = leadWhatsapp.replace(/\D/g, '');
@@ -529,7 +541,8 @@ export default function LandingPage() {
                                         required
                                         type="tel"
                                         value={leadWhatsapp}
-                                        onChange={(e) => setLeadWhatsapp(e.target.value)}
+                                        onChange={handleWhatsappChange}
+                                        maxLength={15}
                                         className="w-full bg-gray-50 dark:bg-brand-dark border border-gray-100 dark:border-white/5 rounded-xl px-4 py-3 md:px-5 md:py-3.5 focus:ring-2 focus:ring-brand-primary outline-none text-slate-800 dark:text-white font-bold transition-all"
                                         placeholder="(00) 00000-0000"
                                     />
@@ -537,8 +550,8 @@ export default function LandingPage() {
                                 <button
                                     disabled={status === 'loading'}
                                     className={`w-full font-black py-4 md:py-5 rounded-xl shadow-lg transition-all uppercase tracking-widest text-[10px] md:text-xs flex items-center justify-center gap-3 ${status === 'loading'
-                                            ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                                            : 'bg-brand-primary text-brand-dark hover:bg-brand-dark hover:text-white shadow-brand-primary/20'
+                                        ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                                        : 'bg-brand-primary text-brand-dark hover:bg-brand-dark hover:text-white shadow-brand-primary/20'
                                         }`}
                                 >
                                     {status === 'loading' ? (
